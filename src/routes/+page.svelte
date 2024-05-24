@@ -35,6 +35,36 @@
 		await new Promise((resolve) => setTimeout(resolve, 8000));
 		showBsod = true;
 	}
+
+	const code = `
+import qualified GI.Gtk as Gtk
+import Data.Text (Text, unpack, pack)
+import Control.Monad (void)
+import System.Environment (getProgName)
+
+main :: IO ()
+main = do
+    _ <- Gtk.init Nothing
+    win <- Gtk.windowNew Gtk.WindowTypeToplevel
+    Gtk.windowSetTitle win "名前を入力してください。"
+    Gtk.windowSetDefaultSize win 300 100
+    box <- Gtk.boxNew Gtk.OrientationVertical 10
+    Gtk.containerAdd win box
+    entry <- Gtk.entryNew
+    Gtk.boxPackStart box entry True True 0
+    button <- Gtk.buttonNewWithLabel "送信"
+    Gtk.boxPackStart box button True True 0
+
+    Gtk.onButtonClicked button $ do
+        name <- Gtk.entryGetText entry
+        let greeting = "Hello, " <> name
+        dialog <- Gtk.messageDialogNew (Just win) [] Gtk.MessageTypeInfo Gtk.ButtonsTypeOk greeting
+        void $ Gtk.dialogRun dialog
+        Gtk.widgetDestroy dialog
+
+    onDestroy <- Gtk.onWidgetDestroy win Gtk.mainQuit
+    Gtk.widgetShowAll win
+    Gtk.main`;
 </script>
 
 {#if showBsod}
@@ -83,7 +113,7 @@
 	</Popup>
 {/if}
 
-<Window title="+page.svelte - win-hell - Visual Studio Code" class="h-full">
+<Window title="hello.hs - my first project - Visual Studio Code" class="h-full">
 	<div class="flex flex-col h-full">
 		<div class="flex h-full">
 			<aside class="pr-3 min-w-[200px]">
@@ -112,73 +142,8 @@
 					<div class="w-full -my-5">
 						<pre class="w-full">
               <code class="">
-    import Control.Applicative
-    import Control.Monad
-    import Control.Monad.Trans.State
-    import Control.Monad.Trans.Writer
-    import Data.Functor.Identity
-    import Data.List
-    import Data.Map (Map)
-    import qualified Data.Map as Map
-    
-    -- Define a custom data type for expressions
-    data Expr
-      = Lit Int
-      | Add Expr Expr
-      | Sub Expr Expr
-      | Mul Expr Expr
-      | Div Expr Expr
-      deriving (Show)
-    
-    -- Evaluate an expression
-    eval :: Expr -> Int
-    eval (Lit n) = n
-    eval (Add e1 e2) = eval e1 + eval e2
-    eval (Sub e1 e2) = eval e1 - eval e2
-    eval (Mul e1 e2) = eval e1 * eval e2
-    eval (Div e1 e2) = eval e1 `div` eval e2
-    
-    -- Define a simple parser for expressions
-    parseExpr :: String -> Maybe Expr
-    parseExpr = undefined  -- You can implement a parser here for your skit
-    
-    -- Define a State monad to keep track of a symbol table
-    type SymbolTable = Map String Int
-    
-    -- Define a function to add a variable to the symbol table
-    addVariable :: String -> Int -> SymbolTable -> SymbolTable
-    addVariable name value = Map.insert name value
-    
-    -- Define a Writer monad to log messages
-    type Logger = [String]
-    
-    -- Log a message
-    logMessage :: String -> Writer Logger ()
-    logMessage msg = tell [msg]
-    
-    -- Define a function to compute the factorial of a number
-    factorial :: Int -> Writer Logger Int
-    factorial 0 = do
-      logMessage "Computing factorial of 0"
-      return 1
-    factorial n = do
-      logMessage $ "Computing factorial of " ++ show n
-      return (n * prevResult)
-    
-    -- Define a function to find the nth Fibonacci number
-    fibonacci :: Int -> Writer Logger Int
-    fibonacci 0 = do
-      logMessage "Fib(0) = 0"
-      return 0
-    fibonacci 1 = do
-      logMessage "Fib(1) = 1"
-      return 1
-    fibonacci n = do
-      logMessage $ "Computing Fib(" ++ show n ++ ")"
-      let result = fib1 + fib2
-      logMessage $ "Fib(" ++ show n ++ ") = " ++ show result
-      return result
-              </code>
+								{code}
+							</code>
             </pre>
 					</div>
 				</div>
